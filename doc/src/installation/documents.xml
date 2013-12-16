@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE section PUBLIC "-//Boost//DTD BoostBook XML V1.0//EN"
+  "http://www.boost.org/tools/boostbook/dtd/boostbook.dtd">
+<!--
+  Hamigaki Library Document Source
+
+  Copyright Takeshi Mouri 2008.
+  Distributed under the Boost Software License, Version 1.0.
+  (See accompanying file LICENSE_1_0.txt or copy at
+  http://www.boost.org/LICENSE_1_0.txt)
+-->
+<section id="installation.documents">
+  <title>ドキュメントのビルド</title>
+  <para>SourceForge.jpから<ulink url="http://sourceforge.jp/projects/hamigaki/files/?release_id=30253">リリースパッケージ</ulink>をダウンロードした場合、パッケージにはHTML形式のドキュメントが付属しているが、HTML形式以外のドキュメントが必要な場合やソースコードをSVNリポジトリから取得した場合は、ドキュメントのビルドが必要となる。</para>
+  <section id="installation.documents.tools">
+    <title>ツール</title>
+    <para>ドキュメントのビルドには以下のツールが利用される。</para>
+    <itemizedlist>
+      <listitem><ulink url="http://www.boost.org/doc/tools/jam/index.html">Boost.Jam</ulink></listitem>
+      <listitem><ulink url="http://www.boost.org/doc/tools/build/index.html">Boost.Build</ulink></listitem>
+      <listitem><ulink url="http://xmlsoft.org/XSLT/">xsltproc</ulink> (Windows版バイナリは<ulink url="http://www.meta-comm.com/engineering/boost/xsltproc-win32.zip">こちら</ulink>)</listitem>
+      <listitem><ulink url="http://docbook.sourceforge.net/">docbook-xsl</ulink></listitem>
+      <listitem><ulink url="http://www.oasis-open.org/docbook/xml/4.2/index.1.shtml">docbook-dtd</ulink> (バージョン4.2)</listitem>
+      <listitem><ulink url="http://xml.apache.org/fop/download.html">Apache FOP</ulink> (バージョン0.20.5、PDF/Postscriptを生成する場合のみ)</listitem>
+    </itemizedlist>
+  </section>
+  <section id="installation.documents.settings">
+    <title>設定</title>
+    <para>ドキュメントのビルドには、bjamツールセットxsltproc及びboostbookの設定が必要である。また、PDFやPostscriptを生成する場合はfopの設定が必要である。</para>
+    <section id="installation.documents.settings.xsltproc">
+      <title>xsltproc</title>
+      <programlisting><emphasis role="bold">module</emphasis><![CDATA[ xsltproc {
+    ]]><emphasis role="bold">rule</emphasis><![CDATA[ init ( xsltproc ? )
+}]]></programlisting>
+      <informaltable frame="all">
+        <tgroup cols="3">
+          <thead>
+            <row>
+              <entry>引数</entry>
+              <entry>意味</entry>
+              <entry>既定値</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>xsltproc</entry>
+              <entry>xsltprocの実行ファイルパス</entry>
+              <entry>$(XSLTPROC)</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+    </section>
+    <section id="installation.documents.settings.boostbook">
+      <title>boostbook</title>
+      <programlisting><emphasis role="bold">module</emphasis><![CDATA[ boostbook {
+    ]]><emphasis role="bold">rule</emphasis><![CDATA[ init ( docbook-xsl-dir ? : docbook-dtd-dir ? : boostbook-dir ? )
+}]]></programlisting>
+      <informaltable frame="all">
+        <tgroup cols="3">
+          <thead>
+            <row>
+              <entry>引数</entry>
+              <entry>意味</entry>
+              <entry>既定値</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>docbook-xsl-dir</entry>
+              <entry>DocBook XSLのインストール先ディレクトリ</entry>
+              <entry>$(DOCBOOK_XSL_DIR)</entry>
+            </row>
+            <row>
+              <entry>docbook-dtd-dir</entry>
+              <entry>DocBook DTDのインストール先ディレクトリ</entry>
+              <entry>$(DOCBOOK_DTD_DIR)</entry>
+            </row>
+            <row>
+              <entry>boostbook-dir</entry>
+              <entry>BoostBookのインストール先ディレクトリ</entry>
+              <entry>$(BOOST_ROOT)/tools/boostbook</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+    </section>
+    <section id="installation.documents.settings.fop">
+      <title>fop</title>
+      <programlisting><emphasis role="bold">module</emphasis><![CDATA[ fop {
+    ]]><emphasis role="bold">rule</emphasis><![CDATA[ init ( fop-command ? : java-home ? )
+}]]></programlisting>
+      <informaltable frame="all">
+        <tgroup cols="3">
+          <thead>
+            <row>
+              <entry>引数</entry>
+              <entry>意味</entry>
+              <entry>既定値</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>fop-command</entry>
+              <entry>FOPの実行ファイルパス</entry>
+              <entry>$(FOP_DIR)/fop</entry>
+            </row>
+            <row>
+              <entry>java-home</entry>
+              <entry>Javaのインストール先ディレクトリ</entry>
+              <entry></entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+    </section>
+    <para>xsltprocを<filename class="directory">C:\Boost\bin</filename>に、docbook-xslを<filename class="directory">C:\Boost\share\docbook-xsl</filename>に、docbook-dtdを<filename class="directory">C:\Boost\share\docbook-xml</filename>に配置し、Boostパッケージの<filename class="directory">tools/boostbook</filename>ディレクトリを<filename class="directory">C:\Boost\share\boostbook</filename>にコピーした場合は、user-config.jamに次のコードを追加する。</para>
+    <informalexample><programlisting><![CDATA[import toolset : using ;
+using xsltproc : C:/Boost/bin/xsltproc\.exe ;
+using boostbook : C:/Boost/share/docbook-xsl : C:/Boost/share/docbook-dtd : C:/Boost/share/boostbook ;]]></programlisting></informalexample>
+    <para>xsltproc-configモジュール及びboostbook-configモジュールを利用すれば次のように記述することもできる。</para>
+    <informalexample><programlisting><![CDATA[import xsltproc-config ;
+import boostbook-config ;
+]]></programlisting></informalexample>
+  </section>
+  <section id="installation.documents.build">
+    <title>ビルド</title>
+    <para>実際にビルドするには、Hamigakiライブラリのdocディレクトリでbjamを実行する。bjamターゲットは次の通りである。</para>
+    <informaltable frame="all">
+      <tgroup cols="2">
+        <thead>
+          <row>
+            <entry>ターゲット名</entry>
+            <entry>意味</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>html</entry>
+            <entry>分割HTML</entry>
+          </row>
+          <row>
+            <entry>onehtml</entry>
+            <entry>単一HTML</entry>
+          </row>
+          <row>
+            <entry>man</entry>
+            <entry>UNIX man ページ</entry>
+          </row>
+          <row>
+            <entry>pdf</entry>
+            <entry>PDF</entry>
+          </row>
+          <row>
+            <entry>ps</entry>
+            <entry>Postscript</entry>
+          </row>
+          <row>
+            <entry>docbook</entry>
+            <entry>DocBook XML</entry>
+          </row>
+          <row>
+            <entry>fo</entry>
+            <entry>XSL Formatting Objects</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+    <para>ターゲットを指定しない場合はhtmlが選択される。</para>
+  </section>
+</section>
